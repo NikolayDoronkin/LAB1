@@ -3,9 +3,13 @@ package com.company;
 import java.util.Scanner;
 
 public class Main {
+
     static MyArrayList<Polinomial> global = new MyArrayList<>();
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_RESET = "\u001B[0m";
 
     public static void main(String[] args) {
+
         MyArrayList<Polinomial> q = new MyArrayList<>();
         MyArrayList<Polinomial> p = new MyArrayList<>();
         MyArrayList<Polinomial> r = new MyArrayList<>();
@@ -15,31 +19,42 @@ public class Main {
         //сортировка списка по степени
         sort(q);
         sort(p);
-        for (int a = 0; a < q.size(); a++) {
-            System.out.println(q.get(a).toString());
-        }
-        for (int b = 0; b < p.size(); b++) {
-            System.out.println(p.get(b).toString());
-        }
+        calc(p);
+        calc(q);
+        System.out.print(ANSI_GREEN + "Уравнение p: " + ANSI_RESET);
+        outputFunc(q);
+        System.out.print(ANSI_GREEN + "Уравнение q: " + ANSI_RESET);
+        outputFunc(p);
+        System.out.println(ANSI_GREEN + "РЕЗУЛЬТАТ ФУНКЦИИ EQUALITY: " + ANSI_RESET);
         resOfEquality(Equality(p, q));
+        System.out.println(ANSI_GREEN + "РЕЗУЛЬТАТ ФУНКЦИИ MEANING: " + ANSI_RESET);
         Meaning(p, 10);
+        System.out.println(ANSI_GREEN + "РЕЗУЛЬТАТ ФУНКЦИИ ADD: " + ANSI_RESET);
         Add(r, p, q);
 
+    }
+
+    private static void outputFunc(MyArrayList<Polinomial> q) {
+        for (int a = 0; a < q.size(); a++) {
+            if (a != q.size() - 1) System.out.print(q.get(a).toString() + " + ");
+            else System.out.print(q.get(a).toString());
+        }
+        System.out.println();
     }
 
     private static boolean Equality(MyArrayList<Polinomial> p, MyArrayList<Polinomial> q) {
         boolean check = true;
         if (p.size() == q.size()) {
             for (int a = 0; a < p.size(); a++) {
-                if (p.get(a).getRate() != q.get(a).getRate()) {
+                if (p.get(a).getPower() != q.get(a).getPower()) {
                     check = false;
                     break;
-                } else if (p.get(a).getPower() != q.get(a).getPower()) {
+                } else if (p.get(a).getRate() != q.get(a).getRate()) {
                     check = false;
                     break;
                 }
             }
-        }
+        } else check = false;
         return check;
     }
 
@@ -53,16 +68,14 @@ public class Main {
         for (int a = 0; a < p.size(); a++) {
             y += p.get(a).getRate() * Math.pow(x, p.get(a).getPower());
         }
-        System.out.println("Значение многочлена в целочисленной точке x равно " + y);
+        System.out.println("Значение многочлена в целочисленной точке x: " + y);
     }
 
     private static void Add(MyArrayList<Polinomial> res, MyArrayList<Polinomial> first, MyArrayList<Polinomial> second) {
         catching(first, second);
         calc(global);
         res = global;
-        for (int i = 0; i < res.size(); i++) {
-            System.out.println(res.get(i).toString());
-        }
+        outputFunc(res);
     }
 
     private static void input(MyArrayList<Polinomial> list) {
@@ -104,7 +117,7 @@ public class Main {
         }
     }
 
-    private static MyArrayList<Polinomial> catching(MyArrayList<Polinomial> first, MyArrayList<Polinomial> second) {
+    private static void catching(MyArrayList<Polinomial> first, MyArrayList<Polinomial> second) {
         boolean check = true;
         for (int i = 0; i < first.size(); i++) {
             for (int y = 0; y < second.size(); y++) {
@@ -125,18 +138,17 @@ public class Main {
             global.add(new Polinomial(second.get(b).getPower(), second.get(b).getRate()));
         }
         sort(global);
-        return global;
     }
 
     private static void calc(MyArrayList<Polinomial> x) {
         for (int i = 0; i < x.size(); i++) {
             for (int y = i + 1; y < x.size(); y++) {
-                if (x.get(i).getPower() == x.get(y).getPower()){
+                if (x.get(i).getPower() == x.get(y).getPower()) {
                     x.get(i).setRate(x.get(i).getRate() + x.get(y).getRate());
                     x.removeAt(y);
+                    if (x.get(i).getRate() == 0) x.removeAt(i);
                     break;
                 }
-
             }
         }
     }

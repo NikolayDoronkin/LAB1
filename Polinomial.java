@@ -27,6 +27,6 @@ public class Polinomial {
 
     @Override
     public String toString(){
-        return this.power + ", " + this.rate;
+        return this.rate + "x^(" + this.power + ")";
     }
 }
